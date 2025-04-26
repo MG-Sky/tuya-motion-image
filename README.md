@@ -1,5 +1,5 @@
 ## Tuya Image Processing and HASS Webhook Notification
-This project allows you to process images (and videos) from your Tuya WiFi peephole camera and send notifications to your Home Assistant (HASS) instance via webhook.
+This project allows you to process images from your Tuya WiFi peephole camera and send notifications to your Home Assistant (HASS) instance via webhook.
 
 The idea for this project was inspired by a post from Belzedaar Paul (https://community.home-assistant.io/t/make-the-picture-taken-from-tuya-smart-video-doorbell-available-in-ha/362848/23) and a script from WattageGuy's repository (https://github.com/WattageGuy/My-Home-Assistant-Config/blob/main/tuya-doorbell/app.py).
 
