@@ -1,0 +1,4 @@
+websocket-client
+requests
+tuya-connector-python
+dotenv
