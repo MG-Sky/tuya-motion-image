@@ -11,14 +11,15 @@ import struct
 import io, os, datetime
 from dotenv import load_dotenv
 import hass_webhook
+import shutil
 
 load_dotenv() 
 BLOCK_SIZE          = 16
-ACCESS_ID           =  os.getenv('ACCESS_ID')
-ACCESS_KEY          =  os.getenv('ACCESS_KEY')
-API_ENDPOINT        =  os.getenv('API_ENDPOINT')
-DEVICE_ID           =  os.getenv('DEVICE_ID')
-FILE_PATH           =  os.getenv('FILE_PATH')
+ACCESS_ID           = os.getenv('ACCESS_ID')
+ACCESS_KEY          = os.getenv('ACCESS_KEY')
+API_ENDPOINT        = os.getenv('API_ENDPOINT')
+DEVICE_ID           = os.getenv('DEVICE_ID')
+FILE_PATH           = os.getenv('FILE_PATH')
 HASS_URL            = os.getenv('HASS_URL')
 HASS_MESSAGE        = os.getenv('HASS_MESSAGE')
 HASS_WEBHOOK_NAME   = os.getenv('HASS_WEBHOOK_NAME')
@@ -39,7 +40,7 @@ def add_trailing_slash(path):
 
 def main(data: str):
 
-    fileName = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".jpeg"
+    fileName =  datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".jpeg"
     imagePath = add_trailing_slash(FILE_PATH) + fileName 
 
     # Init OpenAPI and connect
@@ -75,6 +76,30 @@ def main(data: str):
                                 HASS_WWW_FILE,
                                 HASS_WEBHOOK_NAME,
                                 fileName)
+    image_archival()
+
+def image_archival():
+    root_folder = add_trailing_slash(FILE_PATH)
+    files = [f for f in os.listdir(root_folder) if os.path.isfile(os.path.join(root_folder, f))]
+
+    for file in files:
+        file_path = os.path.join(root_folder, file)
+        file_creation_time = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
+        current_time = datetime.datetime.now().date()
+
+        if (current_time - file_creation_time.date()).days > 0:
+
+            year_folder = file_creation_time.strftime("%Y")
+            month_folder = file_creation_time.strftime("%m")
+            day_folder = file_creation_time.strftime("%d")
+
+            folder_path = os.path.join(root_folder, year_folder, month_folder, day_folder)
+
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+                
+            new_file_name = file_creation_time.strftime("%H-%M") + os.path.splitext(file)[1]
+            shutil.move(file_path, os.path.join(folder_path, new_file_name))
 
 if __name__ == '__main__':
     main()
